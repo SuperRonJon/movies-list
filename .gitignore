@@ -2,3 +2,4 @@ venv/
 .vscode/
 secrets.py
 *.sqlite3
+__pycache__/

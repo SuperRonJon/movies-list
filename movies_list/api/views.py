@@ -3,8 +3,8 @@ from django.http import HttpResponse
 from rest_framework import status, generics
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from .models import Movie
-from .serializers import MovieSerializer
+from .models import Movie, Tag
+from .serializers import MovieSerializer, TagSerializer
 from .tmdb_service import get_search_results, get_movie_info
 
 # Create your views here.
@@ -40,4 +40,22 @@ class InfoView(APIView):
         if info is None:
             return Response(status=status.HTTP_404_NOT_FOUND)
         return Response(info)
+
+
+class TagsView(generics.ListCreateAPIView):
+    queryset = Tag.objects.all()
+    serializer_class = TagSerializer
+
+
+class TagMovieView(APIView):
+    def get(self, request, movie):
+        tags = Tag.objects.filter(movie__exact=movie)
+        serializer = TagSerializer(tags, many=True)
+        return Response(serializer.data)
+
+
+class TagRemoveView(generics.DestroyAPIView):
+    queryset = Tag.objects.all()
+    serializer_class = TagSerializer
+    
     
