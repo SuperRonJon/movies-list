@@ -57,5 +57,11 @@ class TagMovieView(APIView):
 class TagRemoveView(generics.DestroyAPIView):
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
+
+
+class TagUniqueView(APIView):
+    def get(self, request):
+        tags = Tag.objects.order_by('name').values('name').distinct()
+        return Response(tags)
     
     
