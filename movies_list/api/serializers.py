@@ -10,7 +10,8 @@ class MovieSerializer(serializers.ModelSerializer):
             'tmdb_id', 
             'popularity', 
             'release_date', 
-            'overview'
+            'overview',
+            'poster_path'
         )
 
 class TagSerializer(serializers.ModelSerializer):

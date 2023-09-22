@@ -14,7 +14,8 @@ def get_search_results(search_query):
             "tmdb_id": movie['id'],
             "popularity": movie['popularity'],
             "release_date": movie['release_date'],
-            "overview": movie['overview']
+            "overview": movie['overview'],
+            "poster_path": movie['poster_path']
         }
         return_list.append(result_dict)
     return sorted(return_list, key=lambda d: d['popularity'], reverse=True)
