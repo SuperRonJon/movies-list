@@ -1,4 +1,6 @@
 <script>
+    import Movie from "./movie.svelte";
+
     export let data;
     console.log("movies", data.movies);
     console.log("tags", data.tags);
@@ -12,8 +14,15 @@
     }
 </script>
 
-<h1>Movies</h1>
+<h1 class='center'>Movies</h1>
 
+<div class='results-container'>
+{#each data.movies as movie}
+<Movie {...movie} tags={getTagsForId(movie.tmdb_id)} />
+{/each}
+</div>
+
+<!--
 {#each data.movies as movie}
 <h4>{movie.title} ({getYear(movie.release_date)})</h4>
 <ul>
@@ -22,4 +31,16 @@
     {/each}
 </ul>
 {/each}
+-->
 
+<style>
+    .results-container {
+        display: flex;
+        justify-content: space-evenly;
+        flex-wrap: wrap;
+    }
+
+    .center {
+        text-align: center;
+    }
+</style>
