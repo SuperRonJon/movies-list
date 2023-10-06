@@ -2,8 +2,6 @@
     import Movie from "./movie.svelte";
 
     export let data;
-    console.log("movies", data.movies);
-    console.log("tags", data.tags);
 
     function getYear(date) {
         return date.split("-")[0];
@@ -18,20 +16,9 @@
 
 <div class='results-container'>
 {#each data.movies as movie}
-<Movie {...movie} tags={getTagsForId(movie.tmdb_id)} />
+    <Movie {...movie} tags={getTagsForId(movie.tmdb_id)} />
 {/each}
 </div>
-
-<!--
-{#each data.movies as movie}
-<h4>{movie.title} ({getYear(movie.release_date)})</h4>
-<ul>
-    {#each getTagsForId(movie.tmdb_id) as tag}
-        <li>{tag.name}</li>
-    {/each}
-</ul>
-{/each}
--->
 
 <style>
     .results-container {
