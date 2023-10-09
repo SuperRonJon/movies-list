@@ -48,6 +48,13 @@
             title: title,
         });
     }
+
+    function tagBadgeClicked(event) {
+        const tag = event.target.innerText.toLowerCase();
+        dispatch('tag-clicked', {
+            name: tag,
+        });
+    }
 </script>
 <div>
     <Group position='center' spacing="xs">
@@ -72,7 +79,7 @@
         </Tooltip>
         <Group class="ml-0 pl-0" spacing='xs' direction='column'>
             {#each tags as tag}
-                <Badge size='sm' radius='sm'>
+                <Badge on:click={tagBadgeClicked} size='sm' radius='sm'>
                     {tag.name}
                 </Badge>
             {/each}

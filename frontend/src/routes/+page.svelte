@@ -5,11 +5,12 @@
     import { invalidateAll } from '$app/navigation';
 
     export let data;
+    let filteredMovies = [];
     let inputValue = "";
     let showInput = false;
     let filmTagId = "";
     let filmTagName = "";
-    let tagInput = null;
+    let currentTag = null;
 
     $: inputPlaceholder = filmTagName === "" ? "Enter tag..." : "Enter tag for " + filmTagName;
 
@@ -18,7 +19,7 @@
     }
 
     function getTagsForId(id){
-        return data.tags.filter((tag) => tag.movie == id)
+        return filteredTags.filter((tag) => tag.movie == id)
     }
 
     function sortDataAlphabet() {
@@ -59,7 +60,7 @@
             }
             await addTag(tagData);
             inputValue = "";
-            invalidateAll(() => true);
+            invalidateAll();
         }
     }
 
@@ -78,10 +79,57 @@
         
     }
 
-    sortDataAlphabet();
+    function movieContainsTag(movieId, tag) {
+        const tags = getTagsForId(movieId).map((tag) => tag.name.toLowerCase());
+        const contains = tags.includes(tag.toLowerCase())
+        return tags.includes(tag.toLowerCase())
+    }
+
+    function handleTagClicked(event) {
+        const tagName = event.detail.name;
+        currentTag = tagName;
+    }
+
+    function resetTagFilter() {
+        currentTag = null;
+    }
+
+    function filterMovies(movies, currentTag) {
+        let filtered = movies.filter((movie) => {
+            if(currentTag === null) {
+                return true;
+            }
+            return movieContainsTag(movie.tmdb_id, currentTag);
+        });
+
+        console.log("filtered", filtered);
+
+        filtered.sort((a, b) => {
+            if(a.title < b.title) {
+                return -1;
+            }
+            else {
+                return 1;
+            }
+        });
+        return filtered;
+    }
+
+    $: filteredMovies = filterMovies(data.movies, currentTag)
+    $: filteredTags = data.tags.sort((a, b) => {
+        if(a.name < b.name) {
+            return -1;
+        }
+        else {
+            return 1;
+        }
+    });
 </script>
 
 <a class="text-blue-600 dark:text-blue-500 hover:underline pt-2 float-right mr-4" href="/add">Add Page</a>
+{#if currentTag !== null}
+<button on:click={resetTagFilter} class="float-left mt-2 text-blue-600 dark:text-blue-500 hover:underline ml-4">Reset filter</button>
+{/if}
 <h1 class='text-3xl font-bold mb-5 text-center'>Movies</h1>
 
 {#if showInput}
@@ -91,9 +139,9 @@
 {/if}
 
 <div class='results-container'>
-{#each data.movies as movie}
+{#each filteredMovies as movie}
     <div class="basis-1/6">
-        <Movie on:add-tags={handleAddTags} {...movie} tags={getTagsForId(movie.tmdb_id)} canAddTags />
+        <Movie on:add-tags={handleAddTags} on:tag-clicked={handleTagClicked} {...movie} tags={getTagsForId(movie.tmdb_id)} canAddTags />
     </div>
 {/each}
 </div>
