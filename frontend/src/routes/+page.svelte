@@ -65,16 +65,19 @@
     }
 
     function handleAddTags(event) {
+        if(showInput && event.detail.tmdb_id === filmTagId) {
+            showInput = false;
+            filmTagId = "";
+            filmTagName = "";
+            return;
+        }
         console.log("Add tags", event.detail.tmdb_id);
         filmTagId = event.detail.tmdb_id;
         filmTagName = event.detail.title;
         if(!showInput) {
             showInput = true;
         }
-        if(tagInput !== null) {
-            console.log("taginput focus", tagInput);
-            tagInput.focus();
-        }
+        
     }
 
     sortDataAlphabet();
@@ -85,7 +88,7 @@
 
 {#if showInput}
 <div class="w-1/3 mx-auto mb-10">
-    <TextInput element={tagInput} on:keyup={( event ) => handleEnter(event)} bind:value={inputValue} placeholder={inputPlaceholder} />
+    <TextInput on:keyup={( event ) => handleEnter(event)} bind:value={inputValue} placeholder={inputPlaceholder} />
 </div>
 {/if}
 
