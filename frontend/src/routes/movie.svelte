@@ -39,7 +39,6 @@
             overview: overview
 
         }
-        console.log("Add film", filmData);
         await addMovie(filmData);
     }
 

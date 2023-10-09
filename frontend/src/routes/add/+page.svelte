@@ -8,9 +8,7 @@
 
     async function handleEnter(keyupEvent) {
         if(keyupEvent.key === "Enter") {
-            console.log("searching", inputValue);
             movies = await searchMovies(inputValue);
-            console.log("found movies", movies);
         }
     }
 </script>

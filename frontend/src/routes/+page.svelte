@@ -53,7 +53,6 @@
 
     async function handleEnter(keyupEvent) {
         if(keyupEvent.key === "Enter" && inputValue !== "" && filmTagId !== "") {
-            console.log("Enter", inputValue);
             const tagData = {
                 movie: filmTagId,
                 name: inputValue
@@ -71,7 +70,6 @@
             filmTagName = "";
             return;
         }
-        console.log("Add tags", event.detail.tmdb_id);
         filmTagId = event.detail.tmdb_id;
         filmTagName = event.detail.title;
         if(!showInput) {
