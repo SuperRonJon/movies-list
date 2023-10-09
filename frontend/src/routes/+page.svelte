@@ -43,7 +43,9 @@
     sortDataAlphabet();
 </script>
 
-<h1 class='center'>Movies</h1>
+<a class="text-blue-600 dark:text-blue-500 hover:underline pt-2 float-right mr-4" href="/add">Add Page</a>
+<h1 class='text-3xl font-bold mb-5 text-center'>Movies</h1>
+
 
 <div class='results-container'>
 {#each data.movies as movie}
@@ -58,7 +60,4 @@
         flex-wrap: wrap;
     }
 
-    .center {
-        text-align: center;
-    }
 </style>

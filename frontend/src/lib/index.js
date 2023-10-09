@@ -17,3 +17,30 @@ export async function getAllTags() {
         throw Error("Error getting tags");
     }
 }
+
+export async function searchMovies(query) {
+    const res = await fetch(BASE_URL + "/api/search/?q=" + query)
+    if(res.ok) {
+        return await res.json();
+    }
+    else {
+        throw Error("Error searching with query: " + query);
+    }
+}
+
+export async function addMovie(filmData) {
+    const res = await fetch(BASE_URL + "/api/movies/", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify(filmData),
+    });
+
+    if(res.ok) {
+        return await res.json();
+    }
+    else {
+        throw Error("Error adding film");
+    }
+}
