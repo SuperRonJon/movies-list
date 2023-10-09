@@ -1,7 +1,17 @@
 <script>
     import Movie from "./movie.svelte";
+    import { addTag } from '$lib/index.js';
+    import { TextInput } from "@svelteuidev/core";
+    import { invalidateAll } from '$app/navigation';
 
     export let data;
+    let inputValue = "";
+    let showInput = false;
+    let filmTagId = "";
+    let filmTagName = "";
+    let tagInput = null;
+
+    $: inputPlaceholder = filmTagName === "" ? "Enter tag..." : "Enter tag for " + filmTagName;
 
     function getYear(date) {
         return parseInt(date.split("-")[0])
@@ -40,16 +50,50 @@
             }
         });
     }
+
+    async function handleEnter(keyupEvent) {
+        if(keyupEvent.key === "Enter" && inputValue !== "" && filmTagId !== "") {
+            console.log("Enter", inputValue);
+            const tagData = {
+                movie: filmTagId,
+                name: inputValue
+            }
+            await addTag(tagData);
+            inputValue = "";
+            invalidateAll(() => true);
+        }
+    }
+
+    function handleAddTags(event) {
+        console.log("Add tags", event.detail.tmdb_id);
+        filmTagId = event.detail.tmdb_id;
+        filmTagName = event.detail.title;
+        if(!showInput) {
+            showInput = true;
+        }
+        if(tagInput !== null) {
+            console.log("taginput focus", tagInput);
+            tagInput.focus();
+        }
+    }
+
     sortDataAlphabet();
 </script>
 
 <a class="text-blue-600 dark:text-blue-500 hover:underline pt-2 float-right mr-4" href="/add">Add Page</a>
 <h1 class='text-3xl font-bold mb-5 text-center'>Movies</h1>
 
+{#if showInput}
+<div class="w-1/3 mx-auto mb-10">
+    <TextInput element={tagInput} on:keyup={( event ) => handleEnter(event)} bind:value={inputValue} placeholder={inputPlaceholder} />
+</div>
+{/if}
 
 <div class='results-container'>
 {#each data.movies as movie}
-    <Movie {...movie} tags={getTagsForId(movie.tmdb_id)} />
+    <div class="basis-1/6">
+        <Movie on:add-tags={handleAddTags} {...movie} tags={getTagsForId(movie.tmdb_id)} canAddTags />
+    </div>
 {/each}
 </div>
 

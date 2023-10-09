@@ -44,3 +44,20 @@ export async function addMovie(filmData) {
         throw Error("Error adding film");
     }
 }
+
+export async function addTag(tagData) {
+    const res = await fetch(BASE_URL + "/api/tags/", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify(tagData),
+    });
+
+    if(res.ok) {
+        return await res.json();
+    }
+    else {
+        throw Error("Error adding tag");
+    }
+}

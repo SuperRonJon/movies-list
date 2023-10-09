@@ -23,7 +23,7 @@
 
 <div class='results-container'>
 {#each movies as movie}
-    <Movie {...movie} canAdd={true} />
+    <Movie {...movie} canAddFilm />
 {/each}
 </div>
 
