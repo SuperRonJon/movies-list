@@ -17,6 +17,11 @@
 
     export let canAddFilm = false;
     export let canAddTags = false;
+    export let highlightedTags = [];
+
+    const cursorOverride = {
+        cursor: 'pointer'
+    }
 
     $: release_year = release_date.split("-")[0];
 
@@ -59,7 +64,7 @@
 <div>
     <Group position='center' spacing="xs">
         <Tooltip label={`${title} (${release_year})`}>
-            <div class="image-container mb-4">
+            <div class="image-container mb-4 mr-2">
                 <Image
                     src={IMAGE_BASE + poster_path}
                     width={150}
@@ -79,7 +84,7 @@
         </Tooltip>
         <Group class="ml-0 pl-0" spacing='xs' direction='column'>
             {#each tags as tag}
-                <Badge on:click={tagBadgeClicked} size='sm' radius='sm'>
+                <Badge on:click={tagBadgeClicked} size='sm' radius='sm' variant={highlightedTags.includes(tag.name.toLowerCase()) ? "filled" : "light"} override={cursorOverride}>
                     {tag.name}
                 </Badge>
             {/each}
@@ -105,4 +110,5 @@
         padding-left: 5px;
         padding-right: 5px;
     }
+
 </style>

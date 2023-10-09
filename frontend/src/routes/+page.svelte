@@ -10,7 +10,7 @@
     let showInput = false;
     let filmTagId = "";
     let filmTagName = "";
-    let currentTag = null;
+    let currentTags = [];
 
     $: inputPlaceholder = filmTagName === "" ? "Enter tag..." : "Enter tag for " + filmTagName;
 
@@ -79,30 +79,41 @@
         
     }
 
-    function movieContainsTag(movieId, tag) {
-        const tags = getTagsForId(movieId).map((tag) => tag.name.toLowerCase());
-        const contains = tags.includes(tag.toLowerCase())
-        return tags.includes(tag.toLowerCase())
+    function movieContainsTags(movieId, tags) {
+        const movieTags = getTagsForId(movieId).map((tag) => tag.name.toLowerCase());
+        for(let i = 0; i < tags.length; i++) {
+            if(!movieTags.includes(tags[i])) {
+                return false;
+            }
+        }
+        
+        return true;
     }
 
     function handleTagClicked(event) {
-        const tagName = event.detail.name;
-        currentTag = tagName;
+        const tagName = event.detail.name.toLowerCase();
+        if(currentTags.includes(tagName)) {
+            const index = currentTags.indexOf(tagName);
+            if(index > -1) {
+                currentTags.splice(index, 1);
+                currentTags = currentTags;
+            }
+            return;
+        }
+        currentTags = [...currentTags, tagName];
     }
 
     function resetTagFilter() {
-        currentTag = null;
+        currentTags = [];
     }
 
-    function filterMovies(movies, currentTag) {
+    function filterMovies(movies, tags) {
         let filtered = movies.filter((movie) => {
-            if(currentTag === null) {
+            if(tags.length === 0) {
                 return true;
             }
-            return movieContainsTag(movie.tmdb_id, currentTag);
+            return movieContainsTags(movie.tmdb_id, tags);
         });
-
-        console.log("filtered", filtered);
 
         filtered.sort((a, b) => {
             if(a.title < b.title) {
@@ -115,7 +126,7 @@
         return filtered;
     }
 
-    $: filteredMovies = filterMovies(data.movies, currentTag)
+    $: filteredMovies = filterMovies(data.movies, currentTags)
     $: filteredTags = data.tags.sort((a, b) => {
         if(a.name < b.name) {
             return -1;
@@ -127,7 +138,7 @@
 </script>
 
 <a class="text-blue-600 dark:text-blue-500 hover:underline pt-2 float-right mr-4" href="/add">Add Page</a>
-{#if currentTag !== null}
+{#if currentTags.length !== 0}
 <button on:click={resetTagFilter} class="float-left mt-2 text-blue-600 dark:text-blue-500 hover:underline ml-4">Reset filter</button>
 {/if}
 <h1 class='text-3xl font-bold mb-5 text-center'>Movies</h1>
@@ -138,19 +149,11 @@
 </div>
 {/if}
 
-<div class='results-container'>
+<div class='flex flex-wrap justify-around ml-2'>
 {#each filteredMovies as movie}
     <div class="basis-1/6">
-        <Movie on:add-tags={handleAddTags} on:tag-clicked={handleTagClicked} {...movie} tags={getTagsForId(movie.tmdb_id)} canAddTags />
+        <Movie on:add-tags={handleAddTags} on:tag-clicked={handleTagClicked} {...movie} tags={getTagsForId(movie.tmdb_id)} highlightedTags={currentTags} canAddTags />
     </div>
 {/each}
 </div>
 
-<style>
-    .results-container {
-        display: flex;
-        justify-content: space-evenly;
-        flex-wrap: wrap;
-    }
-
-</style>
