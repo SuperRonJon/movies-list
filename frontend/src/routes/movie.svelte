@@ -21,7 +21,7 @@
 
     const cursorOverride = {
         cursor: 'pointer'
-    }
+    };
 
     $: release_year = release_date.split("-")[0];
 

@@ -13,47 +13,22 @@
     let currentTags = [];
 
     $: inputPlaceholder = filmTagName === "" ? "Enter tag..." : "Enter tag for " + filmTagName;
+    $: filteredMovies = filterMovies(data.movies, currentTags)
+    $: filteredTags = data.tags.sort((a, b) => {
+        if(a.name < b.name) {
+            return -1;
+        }
+        else {
+            return 1;
+        }
+    });
 
     const cursorOverride = {
         cursor: 'pointer'
     };
 
-    function getYear(date) {
-        return parseInt(date.split("-")[0])
-    }
-
     function getTagsForId(id){
         return filteredTags.filter((tag) => tag.movie == id)
-    }
-
-    function sortDataAlphabet() {
-        data.movies.sort((a, b) => {
-            if(a.title < b.title) {
-                return -1;
-            }
-            else {
-                return 1;
-            }
-        })
-    }
-
-    function sortDataYear() {
-        data.movies.sort((a, b) => {
-            if(getYear(a.release_date) > getYear(b.release_date)) {
-                return -1;
-            }
-            else if(getYear(a.release_date) === getYear(b.release_date)) {
-                if(a.title < b.title) {
-                    return -1;
-                }
-                else {
-                    return 1;
-                }
-            }
-            else {
-                return 1;
-            }
-        });
     }
 
     async function handleEnter(keyupEvent) {
@@ -129,34 +104,24 @@
         });
         return filtered;
     }
-
-    $: filteredMovies = filterMovies(data.movies, currentTags)
-    $: filteredTags = data.tags.sort((a, b) => {
-        if(a.name < b.name) {
-            return -1;
-        }
-        else {
-            return 1;
-        }
-    });
 </script>
 
 <a class="text-blue-600 dark:text-blue-500 hover:underline pt-2 float-right mr-4" href="/add">Add Page</a>
 {#if currentTags.length !== 0}
-<button on:click={resetTagFilter} class="float-left mt-2 text-blue-600 dark:text-blue-500 hover:underline ml-4">Reset filter</button>
+    <button on:click={resetTagFilter} class="float-left mt-2 text-blue-600 dark:text-blue-500 hover:underline ml-4">Reset filter</button>
 {/if}
 <h1 class='text-3xl font-bold mb-5 text-center'>Movies</h1>
 
 {#if showInput}
-<div class="w-1/3 mx-auto mb-10">
-    <TextInput on:keyup={( event ) => handleEnter(event)} bind:value={inputValue} placeholder={inputPlaceholder} />
-</div>
+    <div class="w-1/3 mx-auto mb-10">
+        <TextInput on:keyup={( event ) => handleEnter(event)} bind:value={inputValue} placeholder={inputPlaceholder} />
+    </div>
 {/if}
 
 {#if currentTags.length > 0}
     <div class="ml-12 mb-4 flex">
         {#each currentTags as tag, index}
-        <Badge class='mr-2' on:click={() => removeTag(currentTags[index])} size='lg' radius='lg' variant='filled' override={cursorOverride}>{tag}</Badge>
+            <Badge class='mr-2' on:click={() => removeTag(currentTags[index])} size='lg' radius='lg' variant='filled' override={cursorOverride}>{tag}</Badge>
         {/each}
     </div>
 {/if}
