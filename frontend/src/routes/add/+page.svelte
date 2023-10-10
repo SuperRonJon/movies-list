@@ -19,16 +19,8 @@
     <TextInput on:keyup={( event ) => handleEnter(event)} bind:value={inputValue} placeholder="Enter a film title..." />
 </div>
 
-<div class='results-container'>
+<div class='flex flex-wrap w-10/12 mx-auto'>
 {#each movies as movie}
-    <Movie {...movie} canAddFilm />
+        <Movie {...movie} canAddFilm />
 {/each}
 </div>
-
-<style>
-    .results-container {
-        display: flex;
-        justify-content: space-evenly;
-        flex-wrap: wrap;
-    }
-</style>
