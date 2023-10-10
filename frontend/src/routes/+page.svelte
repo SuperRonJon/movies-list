@@ -13,9 +13,10 @@
     let currentTags = [];
     let canEditTags = false;
     let selectedFilms = [];
+    let showUntagged = false;
 
     $: inputPlaceholder = determineInputPlaceholder(filmTagName, selectedFilms);
-    $: filteredMovies = filterMovies(data.movies, currentTags)
+    $: filteredMovies = filterMovies(data.movies, currentTags, showUntagged);
     $: filteredTags = data.tags.sort((a, b) => {
         if(a.name < b.name) {
             return -1;
@@ -99,8 +100,12 @@
         currentTags = [];
     }
 
-    function filterMovies(movies, tags) {
+    function filterMovies(movies, tags, showUntagged) {
         let filtered = movies.filter((movie) => {
+            if(showUntagged) {
+                const movieTags = getTagsForId(movie.tmdb_id);
+                return movieTags.length === 0;
+            }
             if(tags.length === 0) {
                 return true;
             }
@@ -146,6 +151,7 @@
 </script>
 
 <Switch class="ml-4 mt-2 float-left" on:change={toggleEditTags} label="Edit tags" />
+<Badge class="float-left ml-4 mt-2" on:click={() => showUntagged = !showUntagged} variant={showUntagged ? 'filled' : 'light'}>Untagged</Badge>
 <a class="text-blue-600 dark:text-blue-500 hover:underline mt-2 float-right mr-4" href="/add">Add Page</a>
 <h1 class='text-3xl font-bold mb-5 text-center'>Movies</h1>
 
@@ -168,7 +174,7 @@
     </div>
 {/if}
 
-<div class='flex flex-wrap ml-2'>
+<div class='flex flex-wrap w-10/12 mx-auto'>
 {#each filteredMovies as movie}
     <div class="basis-1/6">
         <Movie
