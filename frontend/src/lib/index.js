@@ -77,3 +77,29 @@ export async function removeTag(tagId) {
         throw Error("Error removing tag");
     }
 }
+
+export async function addBulkTag(filmIds, tagName) {
+    let postData = [];
+    filmIds.forEach(id => {
+        const data = {
+            movie: id,
+            name: tagName
+        };
+        postData.push(data);
+    });
+
+    const res = await fetch(BASE_URL + "/api/tags/bulk/", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify(postData),
+    });
+
+    if(res.ok) {
+        return await res.json();
+    }
+    else {
+        throw Error("Error adding tag");
+    }
+}

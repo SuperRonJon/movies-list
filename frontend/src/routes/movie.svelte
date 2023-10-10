@@ -1,5 +1,5 @@
 <script>
-    import { Badge, Image, Tooltip, Group, CloseButton } from '@svelteuidev/core'
+    import { Badge, Image, Tooltip, Group, CloseButton, Checkbox } from '@svelteuidev/core'
     import { createEventDispatcher } from 'svelte';
     import { IMAGE_BASE, addMovie, removeTag } from '$lib/index.js'
 
@@ -70,6 +70,12 @@
     function tagIsHighlighted(tagName) {
         return highlightedTags.includes(tagName.toLowerCase());
     }
+
+    function handleSelected() {
+        dispatch('film-selected', {
+            tmdb_id: tmdb_id,
+        });
+    }
 </script>
 <div>
     <Group position='center' spacing="xs">
@@ -88,6 +94,11 @@
                 {/if}
                 {#if canAddFilm }
                     <button on:click={addMovieClicked} class="overlay-button">+</button>
+                {/if}
+                {#if canEditTags}
+                    <div class="overlay-checkbox">
+                        <Checkbox on:click={handleSelected} size="sm" radius="lg" />
+                    </div>
                 {/if}
             </div>
             
@@ -124,6 +135,13 @@
         background-color: rgba(100, 100, 100, 0.603);
         padding-left: 5px;
         padding-right: 5px;
+    }
+
+    .overlay-checkbox {
+        position: absolute;
+        top: 3%;
+        left: 5%;
+        z-index: 2;
     }
 
 </style>

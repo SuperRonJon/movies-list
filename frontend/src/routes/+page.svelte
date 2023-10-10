@@ -1,6 +1,6 @@
 <script>
     import Movie from "./movie.svelte";
-    import { addTag } from '$lib/index.js';
+    import { addTag, addBulkTag } from '$lib/index.js';
     import { TextInput, Badge, CloseButton, Switch } from "@svelteuidev/core";
     import { invalidateAll } from '$app/navigation';
 
@@ -12,8 +12,9 @@
     let filmTagName = "";
     let currentTags = [];
     let canEditTags = false;
+    let selectedFilms = [];
 
-    $: inputPlaceholder = filmTagName === "" ? "Enter tag..." : "Enter tag for " + filmTagName;
+    $: inputPlaceholder = determineInputPlaceholder(filmTagName, selectedFilms);
     $: filteredMovies = filterMovies(data.movies, currentTags)
     $: filteredTags = data.tags.sort((a, b) => {
         if(a.name < b.name) {
@@ -24,15 +25,25 @@
         }
     });
 
-    const cursorOverride = {
-        cursor: 'pointer'
-    };
+    function determineInputPlaceholder(filmName, selected) {
+        if(selected.length > 0) {
+            return "Enter tag for selections...";
+        }
+
+        return filmName === "" ? "Enter tag..." : `Enter tag for ${filmName}`;
+    }
 
     function getTagsForId(id){
         return filteredTags.filter((tag) => tag.movie == id)
     }
 
     async function handleEnter(keyupEvent) {
+        if(keyupEvent.key === "Enter" && inputValue !== "" && selectedFilms.length > 0) {
+            await addBulkTag(selectedFilms, inputValue);
+            inputValue = "";
+            invalidateAll();
+            return;
+        }
         if(keyupEvent.key === "Enter" && inputValue !== "" && filmTagId !== "") {
             const tagData = {
                 movie: filmTagId,
@@ -41,6 +52,7 @@
             await addTag(tagData);
             inputValue = "";
             invalidateAll();
+           return;
         }
     }
 
@@ -73,13 +85,13 @@
     function handleTagClicked(event) {
         const tagName = event.detail.name.toLowerCase();
         if(currentTags.includes(tagName)) {
-            removeTag(tagName);
+            removeTagFromFilter(tagName);
             return;
         }
         currentTags = [...currentTags, tagName];
     }
 
-    function removeTag(tag) {
+    function removeTagFromFilter(tag) {
         currentTags = currentTags.filter(t => t !== tag);
     }
 
@@ -105,6 +117,34 @@
         });
         return filtered;
     }
+
+    function filmSelected(event) {
+        const id = event.detail.tmdb_id;
+        if(selectedFilms.includes(id)) {
+            selectedFilms.splice(selectedFilms.indexOf(id), 1);
+            selectedFilms = selectedFilms;
+            console.log("selectedFilms", selectedFilms);
+        }
+        else {
+            selectedFilms = [...selectedFilms, id];
+            console.log("selectedFilms", selectedFilms);
+        }
+
+        if(showInput && selectedFilms.length === 0) {
+            showInput = false;
+        }
+        if(!showInput && selectedFilms.length > 0) {
+            showInput = true;
+        }
+        
+    }
+
+    function toggleEditTags() {
+        canEditTags = !canEditTags;
+        if(!canEditTags) {
+            selectedFilms = [];
+        }
+    }
 </script>
 
 <!--
@@ -112,7 +152,7 @@
     <button on:click={resetTagFilter} class="float-left mt-2 text-blue-600 dark:text-blue-500 hover:underline ml-4">Reset filter</button>
 {/if}
 -->
-<Switch class="ml-4 mt-2 float-left" on:change={() => canEditTags = !canEditTags} label="Edit tags" />
+<Switch class="ml-4 mt-2 float-left" on:change={toggleEditTags} label="Edit tags" />
 <a class="text-blue-600 dark:text-blue-500 hover:underline mt-2 float-right mr-4" href="/add">Add Page</a>
 <h1 class='text-3xl font-bold mb-5 text-center'>Movies</h1>
 
@@ -128,7 +168,7 @@
             <Badge class='mr-2' size='lg' radius='lg' variant='filled' >
                 {tag}
                 <svelte:fragment slot='leftSection'>
-                    <CloseButton on:click={() => removeTag(currentTags[index])} size='xs' iconsize='xs' color='white' variant='transparent' />
+                    <CloseButton on:click={() => removeTagFromFilter(currentTags[index])} size='xs' iconsize='xs' color='white' variant='transparent' />
                 </svelte:fragment>
             </Badge>
         {/each}
@@ -146,7 +186,8 @@
             {canEditTags}
             on:add-tags={handleAddTags} 
             on:tag-clicked={handleTagClicked} 
-            on:tag-removed={invalidateAll} 
+            on:tag-removed={invalidateAll}
+            on:film-selected={filmSelected}
         />
     </div>
 {/each}
