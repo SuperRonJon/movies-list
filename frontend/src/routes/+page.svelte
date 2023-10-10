@@ -123,11 +123,9 @@
         if(selectedFilms.includes(id)) {
             selectedFilms.splice(selectedFilms.indexOf(id), 1);
             selectedFilms = selectedFilms;
-            console.log("selectedFilms", selectedFilms);
         }
         else {
             selectedFilms = [...selectedFilms, id];
-            console.log("selectedFilms", selectedFilms);
         }
 
         if(showInput && selectedFilms.length === 0) {
@@ -147,11 +145,6 @@
     }
 </script>
 
-<!--
-{#if currentTags.length !== 0}
-    <button on:click={resetTagFilter} class="float-left mt-2 text-blue-600 dark:text-blue-500 hover:underline ml-4">Reset filter</button>
-{/if}
--->
 <Switch class="ml-4 mt-2 float-left" on:change={toggleEditTags} label="Edit tags" />
 <a class="text-blue-600 dark:text-blue-500 hover:underline mt-2 float-right mr-4" href="/add">Add Page</a>
 <h1 class='text-3xl font-bold mb-5 text-center'>Movies</h1>
