@@ -1,7 +1,7 @@
 <script>
     import Movie from "./movie.svelte";
     import { addTag } from '$lib/index.js';
-    import { TextInput } from "@svelteuidev/core";
+    import { TextInput, Badge } from "@svelteuidev/core";
     import { invalidateAll } from '$app/navigation';
 
     export let data;
@@ -13,6 +13,10 @@
     let currentTags = [];
 
     $: inputPlaceholder = filmTagName === "" ? "Enter tag..." : "Enter tag for " + filmTagName;
+
+    const cursorOverride = {
+        cursor: 'pointer'
+    };
 
     function getYear(date) {
         return parseInt(date.split("-")[0])
@@ -93,14 +97,14 @@
     function handleTagClicked(event) {
         const tagName = event.detail.name.toLowerCase();
         if(currentTags.includes(tagName)) {
-            const index = currentTags.indexOf(tagName);
-            if(index > -1) {
-                currentTags.splice(index, 1);
-                currentTags = currentTags;
-            }
+            removeTag(tagName);
             return;
         }
         currentTags = [...currentTags, tagName];
+    }
+
+    function removeTag(tag) {
+        currentTags = currentTags.filter(t => t !== tag);
     }
 
     function resetTagFilter() {
@@ -149,7 +153,15 @@
 </div>
 {/if}
 
-<div class='flex flex-wrap justify-around ml-2'>
+{#if currentTags.length > 0}
+    <div class="ml-12 mb-4 flex">
+        {#each currentTags as tag, index}
+        <Badge class='mr-2' on:click={() => removeTag(currentTags[index])} size='lg' radius='lg' variant='filled' override={cursorOverride}>{tag}</Badge>
+        {/each}
+    </div>
+{/if}
+
+<div class='flex flex-wrap ml-2'>
 {#each filteredMovies as movie}
     <div class="basis-1/6">
         <Movie on:add-tags={handleAddTags} on:tag-clicked={handleTagClicked} {...movie} tags={getTagsForId(movie.tmdb_id)} highlightedTags={currentTags} canAddTags />
