@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import hello_world, MoviesView, MovieView, SearchView, InfoView, TagsView, TagMovieView, TagRemoveView, TagUniqueView
+from .views import hello_world, MoviesView, MovieView, SearchView, InfoView, TagsView, TagMovieView, TagRemoveView, TagUniqueView, TagBulkView
 
 urlpatterns = [
     path('', hello_world),
@@ -11,4 +11,5 @@ urlpatterns = [
     path('movies/<int:movie>/tags/', TagMovieView().as_view()),
     path('tags/<int:pk>/', TagRemoveView.as_view()),
     path('tags/unique/', TagUniqueView.as_view()),
+    path('tags/bulk/', TagBulkView.as_view()),
 ]

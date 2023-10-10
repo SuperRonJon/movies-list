@@ -65,3 +65,15 @@ class TagUniqueView(APIView):
         return Response(tags)
     
     
+class TagBulkView(APIView):
+    def post(self, request):
+        return_data = []
+        for tag in request.data:
+            serializer = TagSerializer(data=tag)
+            if serializer.is_valid():
+                serializer.save()
+                return_data.append(serializer.data)
+            else:
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response(return_data, status=status.HTTP_201_CREATED)
+        
