@@ -61,3 +61,19 @@ export async function addTag(tagData) {
         throw Error("Error adding tag");
     }
 }
+
+export async function removeTag(tagId) {
+    const res = await fetch(`${BASE_URL}/api/tags/${tagId}/`, {
+        method: "DELETE",
+        headers: {
+            "Content-Type": "application/json",
+        },
+    });
+
+    if(res.ok) {
+        return await res.json();
+    }
+    else {
+        throw Error("Error removing tag");
+    }
+}

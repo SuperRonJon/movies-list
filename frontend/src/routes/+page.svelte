@@ -1,7 +1,7 @@
 <script>
     import Movie from "./movie.svelte";
     import { addTag } from '$lib/index.js';
-    import { TextInput, Badge } from "@svelteuidev/core";
+    import { TextInput, Badge, CloseButton, Switch } from "@svelteuidev/core";
     import { invalidateAll } from '$app/navigation';
 
     export let data;
@@ -11,6 +11,7 @@
     let filmTagId = "";
     let filmTagName = "";
     let currentTags = [];
+    let canEditTags = false;
 
     $: inputPlaceholder = filmTagName === "" ? "Enter tag..." : "Enter tag for " + filmTagName;
     $: filteredMovies = filterMovies(data.movies, currentTags)
@@ -106,10 +107,13 @@
     }
 </script>
 
-<a class="text-blue-600 dark:text-blue-500 hover:underline pt-2 float-right mr-4" href="/add">Add Page</a>
+<!--
 {#if currentTags.length !== 0}
     <button on:click={resetTagFilter} class="float-left mt-2 text-blue-600 dark:text-blue-500 hover:underline ml-4">Reset filter</button>
 {/if}
+-->
+<Switch class="ml-4 mt-2 float-left" on:change={() => canEditTags = !canEditTags} label="Edit tags" />
+<a class="text-blue-600 dark:text-blue-500 hover:underline mt-2 float-right mr-4" href="/add">Add Page</a>
 <h1 class='text-3xl font-bold mb-5 text-center'>Movies</h1>
 
 {#if showInput}
@@ -121,7 +125,12 @@
 {#if currentTags.length > 0}
     <div class="ml-12 mb-4 flex">
         {#each currentTags as tag, index}
-            <Badge class='mr-2' on:click={() => removeTag(currentTags[index])} size='lg' radius='lg' variant='filled' override={cursorOverride}>{tag}</Badge>
+            <Badge class='mr-2' size='lg' radius='lg' variant='filled' >
+                {tag}
+                <svelte:fragment slot='leftSection'>
+                    <CloseButton on:click={() => removeTag(currentTags[index])} size='xs' iconsize='xs' color='white' variant='transparent' />
+                </svelte:fragment>
+            </Badge>
         {/each}
     </div>
 {/if}
@@ -129,7 +138,16 @@
 <div class='flex flex-wrap ml-2'>
 {#each filteredMovies as movie}
     <div class="basis-1/6">
-        <Movie on:add-tags={handleAddTags} on:tag-clicked={handleTagClicked} {...movie} tags={getTagsForId(movie.tmdb_id)} highlightedTags={currentTags} canAddTags />
+        <Movie
+            {...movie} 
+            tags={getTagsForId(movie.tmdb_id)} 
+            highlightedTags={currentTags} 
+            canAddTags
+            {canEditTags}
+            on:add-tags={handleAddTags} 
+            on:tag-clicked={handleTagClicked} 
+            on:tag-removed={invalidateAll} 
+        />
     </div>
 {/each}
 </div>

@@ -1,7 +1,7 @@
 <script>
-    import { Badge, Image, Tooltip, Group, Button } from '@svelteuidev/core'
+    import { Badge, Image, Tooltip, Group, CloseButton } from '@svelteuidev/core'
     import { createEventDispatcher } from 'svelte';
-    import { IMAGE_BASE, addMovie } from '$lib/index.js'
+    import { IMAGE_BASE, addMovie, removeTag } from '$lib/index.js'
 
     const dispatch = createEventDispatcher();
 
@@ -17,6 +17,7 @@
 
     export let canAddFilm = false;
     export let canAddTags = false;
+    export let canEditTags = false;
     export let highlightedTags = [];
 
     const cursorOverride = {
@@ -60,6 +61,11 @@
             name: tag,
         });
     }
+
+    function handleDeleteClicked(tagId) {
+        removeTag(tagId);
+        dispatch('tag-removed');
+    }
 </script>
 <div>
     <Group position='center' spacing="xs">
@@ -82,10 +88,15 @@
             </div>
             
         </Tooltip>
-        <Group class="ml-0 pl-0" spacing='xs' direction='column'>
+        <Group class="ml-0 pl-0 mb-2" spacing='xs' direction='column'>
             {#each tags as tag}
                 <Badge on:click={tagBadgeClicked} size='sm' radius='sm' variant={highlightedTags.includes(tag.name.toLowerCase()) ? "filled" : "light"} override={cursorOverride}>
                     {tag.name}
+                    <svelte:fragment slot='rightSection'>
+                        {#if canEditTags}
+                            <CloseButton on:click={() => handleDeleteClicked(tag.id)} size='xs' iconSize='xs' color='blue' variant='transparent' />
+                        {/if}
+                    </svelte:fragment>
                 </Badge>
             {/each}
         </Group>
