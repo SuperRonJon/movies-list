@@ -66,6 +66,10 @@
         removeTag(tagId);
         dispatch('tag-removed');
     }
+
+    function tagIsHighlighted(tagName) {
+        return highlightedTags.includes(tagName.toLowerCase());
+    }
 </script>
 <div>
     <Group position='center' spacing="xs">
@@ -90,11 +94,11 @@
         </Tooltip>
         <Group class="ml-0 pl-0 mb-2" spacing='xs' direction='column'>
             {#each tags as tag}
-                <Badge on:click={tagBadgeClicked} size='sm' radius='sm' variant={highlightedTags.includes(tag.name.toLowerCase()) ? "filled" : "light"} override={cursorOverride}>
+                <Badge on:click={tagBadgeClicked} size='sm' radius='sm' variant={tagIsHighlighted(tag.name) ? "filled" : "light"} override={cursorOverride}>
                     {tag.name}
                     <svelte:fragment slot='rightSection'>
                         {#if canEditTags}
-                            <CloseButton on:click={() => handleDeleteClicked(tag.id)} size='xs' iconSize='xs' color='blue' variant='transparent' />
+                            <CloseButton on:click={() => handleDeleteClicked(tag.id)} size='xs' iconSize='xs' color={tagIsHighlighted(tag.name) ? "white" : "blue"} variant='transparent' />
                         {/if}
                     </svelte:fragment>
                 </Badge>
