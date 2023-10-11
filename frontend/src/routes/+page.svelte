@@ -1,8 +1,8 @@
 <script>
     import Movie from "./movie.svelte";
-    import { addTag, addBulkTag } from '$lib/index.js';
+    import { addTag, addBulkTag, BASE_URL } from '$lib/index.js';
     import { TextInput, Badge, CloseButton, Switch } from "@svelteuidev/core";
-    import { invalidateAll } from '$app/navigation';
+    import { invalidate } from '$app/navigation';
 
     export let data;
     let filteredMovies = [];
@@ -42,7 +42,7 @@
         if(keyupEvent.key === "Enter" && inputValue !== "" && selectedFilms.length > 0) {
             await addBulkTag(selectedFilms, inputValue);
             inputValue = "";
-            invalidateAll();
+            invalidate(BASE_URL + "/api/tags/");
             return;
         }
         if(keyupEvent.key === "Enter" && inputValue !== "" && filmTagId !== "") {
@@ -52,7 +52,7 @@
             }
             await addTag(tagData);
             inputValue = "";
-            invalidateAll();
+            invalidate(BASE_URL + "/api/tags/");
            return;
         }
     }
@@ -185,7 +185,7 @@
             {canEditTags}
             on:add-tags={handleAddTags} 
             on:tag-clicked={handleTagClicked} 
-            on:tag-removed={invalidateAll}
+            on:tag-removed={() => invalidate(BASE_URL + "/api/tags/")}
             on:film-selected={filmSelected}
         />
     </div>
