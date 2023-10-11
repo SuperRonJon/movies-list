@@ -56,6 +56,9 @@
     }
 
     function tagBadgeClicked(event) {
+        if(event.target.nodeName === "svg") {
+            return;
+        }
         const tag = event.target.innerText.toLowerCase();
         dispatch('tag-clicked', {
             name: tag,
