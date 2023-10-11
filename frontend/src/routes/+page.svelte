@@ -162,7 +162,7 @@
 {/if}
 
 {#if currentTags.length > 0}
-    <div class="ml-12 mb-4 flex">
+    <div class="w-11/12 mx-auto pl-7 mb-4 flex">
         {#each currentTags as tag, index}
             <Badge class='mr-2' size='lg' radius='lg' variant='filled' >
                 {tag}
@@ -174,7 +174,7 @@
     </div>
 {/if}
 
-<div class='flex flex-wrap w-10/12 mx-auto'>
+<div class='flex flex-wrap mx-auto w-11/12'>
 {#each filteredMovies as movie}
     <div class="basis-1/6">
         <Movie
