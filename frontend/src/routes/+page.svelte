@@ -16,7 +16,7 @@
     let showUntagged = false;
 
     $: inputPlaceholder = determineInputPlaceholder(filmTagName, selectedFilms);
-    $: filteredMovies = filterMovies(data.movies, currentTags, showUntagged);
+    $: filteredMovies = filterMovies(data.movies, filteredTags, currentTags, showUntagged);
     $: filteredTags = data.tags.sort((a, b) => {
         if(a.name < b.name) {
             return -1;
@@ -34,8 +34,8 @@
         return filmName === "" ? "Enter tag..." : `Enter tag for ${filmName}`;
     }
 
-    function getTagsForId(id){
-        return filteredTags.filter((tag) => tag.movie == id)
+    function getTagsForId(allTags, id){
+        return allTags.filter((tag) => tag.movie == id);
     }
 
     async function handleEnter(keyupEvent) {
@@ -73,7 +73,7 @@
     }
 
     function movieContainsTags(movieId, tags) {
-        const movieTags = getTagsForId(movieId).map((tag) => tag.name.toLowerCase());
+        const movieTags = getTagsForId(filteredTags, movieId).map((tag) => tag.name.toLowerCase());
         for(let i = 0; i < tags.length; i++) {
             if(!movieTags.includes(tags[i])) {
                 return false;
@@ -100,16 +100,16 @@
         currentTags = [];
     }
 
-    function filterMovies(movies, tags, showUntagged) {
+    function filterMovies(movies, allTags, tagFilters, showUntagged) {
         let filtered = movies.filter((movie) => {
             if(showUntagged) {
-                const movieTags = getTagsForId(movie.tmdb_id);
+                const movieTags = getTagsForId(allTags, movie.tmdb_id);
                 return movieTags.length === 0;
             }
-            if(tags.length === 0) {
+            if(tagFilters.length === 0) {
                 return true;
             }
-            return movieContainsTags(movie.tmdb_id, tags);
+            return movieContainsTags(movie.tmdb_id, tagFilters);
         });
 
         filtered.sort((a, b) => {
@@ -179,7 +179,7 @@
     <div class="basis-1/6">
         <Movie
             {...movie} 
-            tags={getTagsForId(movie.tmdb_id)} 
+            tags={getTagsForId(filteredTags, movie.tmdb_id)} 
             highlightedTags={currentTags} 
             canAddTags
             {canEditTags}
