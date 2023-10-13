@@ -2,20 +2,21 @@
     import Movie from "./movie.svelte";
     import { addTag, addBulkTag, BASE_URL } from '$lib/index.js';
     import { TextInput, Badge, CloseButton, Switch } from "@svelteuidev/core";
-    import { invalidate } from '$app/navigation';
+    import { invalidate, invalidateAll } from '$app/navigation';
 
     export let data;
     let filteredMovies = [];
-    let inputValue = "";
+    let filteredTags = [];
+    let currentTags = [];
+    let selectedFilms = [];
     let showInput = false;
+    let showUntagged = false;
+    let canEditTags = false;
+    let inputValue = "";
     let filmTagId = "";
     let filmTagName = "";
-    let currentTags = [];
-    let canEditTags = false;
-    let selectedFilms = [];
-    let showUntagged = false;
 
-    $: inputPlaceholder = determineInputPlaceholder(filmTagName, selectedFilms);
+    $: inputPlaceholder = determineInputPlaceholder(filmTagName, selectedFilms.length > 0);
     $: filteredMovies = filterMovies(data.movies, filteredTags, currentTags, showUntagged);
     $: filteredTags = data.tags.sort((a, b) => {
         if(a.name < b.name) {
@@ -26,8 +27,8 @@
         }
     });
 
-    function determineInputPlaceholder(filmName, selected) {
-        if(selected.length > 0) {
+    function determineInputPlaceholder(filmName, anySelected=false) {
+        if(anySelected) {
             return "Enter tag for selections...";
         }
 
@@ -133,7 +134,7 @@
             selectedFilms = [...selectedFilms, id];
         }
 
-        if(showInput && selectedFilms.length === 0) {
+        if(showInput && selectedFilms.length === 0 && filmTagId === "") {
             showInput = false;
         }
         if(!showInput && selectedFilms.length > 0) {
@@ -145,7 +146,10 @@
     function toggleEditTags() {
         canEditTags = !canEditTags;
         if(!canEditTags) {
+            showInput = false;
             selectedFilms = [];
+            filmTagId = "";
+            filmTagName = "";
         }
     }
 </script>
@@ -181,7 +185,7 @@
             {...movie} 
             tags={getTagsForId(filteredTags, movie.tmdb_id)} 
             highlightedTags={currentTags} 
-            canAddTags
+            canAddTags={canEditTags}
             {canEditTags}
             on:add-tags={handleAddTags} 
             on:tag-clicked={handleTagClicked} 
