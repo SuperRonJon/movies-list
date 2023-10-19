@@ -19,7 +19,7 @@
     $: inputPlaceholder = determineInputPlaceholder(filmTagName, selectedFilms.length > 0);
     $: filteredMovies = filterMovies(data.movies, filteredTags, currentTags, showUntagged);
     $: filteredTags = data.tags.sort((a, b) => {
-        if(a.name < b.name) {
+        if(a.name.toLowerCase() < b.name.toLowerCase()) {
             return -1;
         }
         else {

@@ -20,6 +20,8 @@
     export let canEditTags = false;
     export let highlightedTags = [];
 
+    let posterHovered = false;
+
     const cursorOverride = {
         cursor: 'pointer'
     };
@@ -79,11 +81,18 @@
             tmdb_id: tmdb_id,
         });
     }
+
+    function handleMouseOver(toggleValue) {
+        posterHovered = toggleValue;
+    }
 </script>
 <div>
     <Group position='center' spacing="xs">
         <Tooltip label={`${title} (${release_year})`}>
-            <div class="image-container mb-4 mr-2">
+            <div role="tooltip" class="image-container mb-4 mr-2"
+                on:mouseenter={() => handleMouseOver(true)}
+                on:mouseleave={() => handleMouseOver(false)}
+            >
                 <Image
                     src={IMAGE_BASE + poster_path}
                     width={150}
@@ -92,7 +101,7 @@
                     alt='Movie Poster'
                     class="mr-0 pr-0 mb-4"
                 />
-                {#if canAddTags}
+                {#if (canAddTags || posterHovered) && !canAddFilm}
                     <button on:click={addTagClicked} class="overlay-button">...</button>
                 {/if}
                 {#if canAddFilm }
