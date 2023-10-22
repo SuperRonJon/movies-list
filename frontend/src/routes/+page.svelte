@@ -16,7 +16,8 @@
     let filmTagId = "";
     let filmTagName = "";
 
-    $: inputPlaceholder = determineInputPlaceholder(filmTagName, selectedFilms.length > 0);
+    $: selectedFilmNames = selectedFilms.map(id => data.movies.filter(movie => movie.tmdb_id === id)[0].title);
+    $: inputPlaceholder = determineInputPlaceholder(filmTagName, selectedFilms);
     $: filteredMovies = filterMovies(data.movies, filteredTags, currentTags, showUntagged);
     $: filteredTags = data.tags.sort((a, b) => {
         if(a.name.toLowerCase() < b.name.toLowerCase()) {
@@ -27,9 +28,9 @@
         }
     });
 
-    function determineInputPlaceholder(filmName, anySelected=false) {
-        if(anySelected) {
-            return "Enter tag for selections...";
+    function determineInputPlaceholder(filmName, selectedFilms=[]) {
+        if(selectedFilms.length > 0) {
+            return `Enter tag for ${selectedFilmNames.join(", ")}...`;
         }
 
         return filmName === "" ? "Enter tag..." : `Enter tag for ${filmName}`;
@@ -146,10 +147,8 @@
     function toggleEditTags() {
         canEditTags = !canEditTags;
         if(!canEditTags) {
-            showInput = false;
+            showInput = filmTagId === "" ? false : showInput;
             selectedFilms = [];
-            filmTagId = "";
-            filmTagName = "";
         }
     }
 </script>
