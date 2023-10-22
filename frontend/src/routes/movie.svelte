@@ -78,6 +78,7 @@
 
     function handleSelected() {
         dispatch('film-selected', {
+            id: id,
             tmdb_id: tmdb_id,
         });
     }
