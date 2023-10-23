@@ -11,6 +11,6 @@ export async function load({ fetch, params }) {
         movies: await getMoviesFromCollection(collectionId, fetch),
         tags: await getTagsFromCollection(collectionId, fetch),
         collectionId: collectionId,
-        collectionName: getCollectionName(collectionId, fetch)
+        collectionName: await getCollectionName(collectionId, fetch)
     }
 }
