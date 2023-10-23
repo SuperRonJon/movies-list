@@ -13,15 +13,26 @@ def hello_world(request):
     return HttpResponse("Hello world")
 
 
-class MoviesView(generics.ListCreateAPIView):
-    queryset = Movie.objects.all()
-    serializer_class = MovieSerializer
+class MoviesView(APIView):
+    def get(self, request):
+        movies = Movie.objects.all()
+        serializer = MovieSerializer(movies, many=True)
+        return Response(serializer.data)
+    def post(self, request):
+        movies = Movie.objects.filter(tmdb_id__exact=request.data['tmdb_id'], collection__exact=request.data['collection'])
+        if len(movies) > 0:
+            return Response({'message': 'Movie already in collection'}, status=status.HTTP_400_BAD_REQUEST)
+        serializer = MovieSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class MovieView(generics.RetrieveDestroyAPIView):
     queryset = Movie.objects.all()
     serializer_class = MovieSerializer
-    lookup_field = 'tmdb_id'
 
 
 class SearchView(APIView):
