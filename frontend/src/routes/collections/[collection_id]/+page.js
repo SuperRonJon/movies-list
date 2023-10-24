@@ -2,6 +2,10 @@ import { getMoviesFromCollection, getTagsFromCollection, getAllCollections } fro
 
 async function getCollectionName(id, fetchMethod=fetch) {
     const collections = await getAllCollections(fetchMethod);
+    const filteredCollections = collections.filter(collection => collection.id === id);
+    if(filteredCollections.length === 0) {
+        return null;
+    }
     return collections.filter(collection => collection.id === id)[0].name;
 }
 
