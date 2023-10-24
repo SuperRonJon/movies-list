@@ -6,6 +6,8 @@ COPY requirements.txt /app/
 RUN pip install -r requirements.txt
 COPY . /app/
 
+ENV TMDB_API_KEY=
+
 RUN python manage.py migrate
 
 EXPOSE 8000

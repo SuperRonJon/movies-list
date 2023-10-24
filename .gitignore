@@ -14,7 +14,7 @@ frontend/out/
 frontend/.npmrc
 
 # production
-frontend//build
+frontend/build
 
 # misc
 frontend/.DS_Store

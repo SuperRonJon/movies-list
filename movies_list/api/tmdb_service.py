@@ -1,6 +1,12 @@
-from .secrets import API_KEY
+import os
 import tmdbsimple as tmdb
 from requests.exceptions import HTTPError
+
+
+try:
+    API_KEY = os.environ['TMDB_API_KEY']
+except KeyError:
+    from .secrets import API_KEY
 
 tmdb.API_KEY = API_KEY
 
