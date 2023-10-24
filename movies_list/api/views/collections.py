@@ -1,8 +1,8 @@
 from rest_framework import generics
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from .models import Collection, Movie, Tag
-from .serializers import CollectionSerializer, MovieSerializer, TagSerializer
+from ..models import Collection, Movie, Tag
+from ..serializers import CollectionSerializer, MovieSerializer, TagSerializer
 
 
 class CollectionsView(generics.ListCreateAPIView):

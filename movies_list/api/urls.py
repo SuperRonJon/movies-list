@@ -1,6 +1,7 @@
 from django.urls import path
-from .views import hello_world, MoviesView, MovieView, SearchView, InfoView, TagsView, TagMovieView, TagRemoveView, TagUniqueView, TagBulkView
-from .views_collection import CollectionsView, CollectionMoviesView, CollectionTagsView, CollectionDeleteView
+from .views.movies import hello_world, MoviesView, MovieView, SearchView, InfoView
+from .views.tags import TagsView, TagMovieView, TagRemoveView, TagUniqueView, TagBulkView
+from .views.collections import CollectionsView, CollectionMoviesView, CollectionTagsView, CollectionDeleteView
 
 urlpatterns = [
     path('', hello_world),
