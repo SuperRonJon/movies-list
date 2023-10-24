@@ -1,8 +1,7 @@
-import { getAllMovies, getAllTags } from '$lib/index.js'
+import { getAllCollections } from "../lib";
 
 export async function load({ fetch }) {
     return {
-        movies: await getAllMovies(fetch),
-        tags: await getAllTags(fetch),
+        collections: await getAllCollections(fetch)
     }
 }

@@ -14,11 +14,13 @@
     export let id = "";
     export let popularity = "";
     export let overview = "";
+    export let collection = "";
 
     export let canAddFilm = false;
     export let canAddTags = false;
     export let canEditTags = false;
     export let highlightedTags = [];
+    export let collectionId = null;
 
     let posterHovered = false;
 
@@ -44,14 +46,15 @@
             poster_path: poster_path,
             tmdb_id: tmdb_id,
             popularity: popularity,
-            overview: overview
-
+            overview: overview,
+            collection: collectionId
         }
         await addMovie(filmData);
     }
 
     function addTagClicked() {
         dispatch('add-tags', {
+            id: id,
             tmdb_id: tmdb_id,
             title: title,
         });
@@ -80,6 +83,7 @@
         dispatch('film-selected', {
             id: id,
             tmdb_id: tmdb_id,
+            collection: collection,
         });
     }
 

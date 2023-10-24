@@ -3,6 +3,8 @@
     import { searchMovies } from '$lib/index.js';
     import Movie from "../movie.svelte";
 
+    export let data;
+
     let inputValue = "";
     let movies = [];
 
@@ -13,7 +15,7 @@
     }
 </script>
 
-<a class="text-blue-600 dark:text-blue-500 hover:underline pt-2 float-left ml-4" href="/">Back to Collection</a>
+<a class="text-blue-600 dark:text-blue-500 hover:underline pt-2 float-left ml-4" href={`/collections/${data.collectionId}`}>Back to Collection</a>
 <h1 class="text-4xl font-extrabold text-center mb-4">Add To Collection</h1>
 <div class="w-1/3 mx-auto mb-10">
     <TextInput on:keyup={( event ) => handleEnter(event)} bind:value={inputValue} placeholder="Enter a film title..." />
@@ -21,6 +23,6 @@
 
 <div class='flex flex-wrap w-10/12 mx-auto'>
 {#each movies as movie}
-        <Movie {...movie} canAddFilm />
+        <Movie {...movie} collectionId={data.collectionId} canAddFilm />
 {/each}
 </div>
