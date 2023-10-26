@@ -1,7 +1,7 @@
 from django.urls import path
 from .views.movies import hello_world, MoviesView, MovieView, SearchView, InfoView
 from .views.tags import TagsView, TagMovieView, TagRemoveView, TagUniqueView, TagBulkView
-from .views.collections import CollectionsView, CollectionMoviesView, CollectionTagsView, CollectionDeleteView
+from .views.collections import CollectionsView, CollectionMoviesView, CollectionTagsView, CollectionDeleteView, CollectionExportView
 
 urlpatterns = [
     path('', hello_world),
@@ -25,4 +25,5 @@ urlpatterns = [
     path('collections/<int:collection_id>/movies/', CollectionMoviesView.as_view()),
     path('collections/<int:collection_id>/tags/', CollectionTagsView.as_view()),
     path('collections/<int:pk>/', CollectionDeleteView.as_view()),
+    path('collections/<int:collection_id>/export/', CollectionExportView.as_view()),
 ]
