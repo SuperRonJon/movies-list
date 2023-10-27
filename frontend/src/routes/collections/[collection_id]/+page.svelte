@@ -1,12 +1,14 @@
 <script>
     import Movie from "./movie.svelte";
     import { addTag, addBulkTag, BASE_URL } from '$lib/index.js';
-    import { TextInput, Badge, CloseButton, Switch } from "@svelteuidev/core";
-    import { invalidate, invalidateAll } from '$app/navigation';
+    import { TextInput, Badge, CloseButton, Switch, Button } from "@svelteuidev/core";
+    import { invalidate } from '$app/navigation';
+    import { Update } from 'radix-icons-svelte';
 
     export let data;
     let filteredMovies = [];
     let filteredTags = [];
+    let excludeTags = [];
     let currentTags = [];
     let selectedFilms = [];
     let showInput = false;
@@ -18,7 +20,7 @@
 
     $: selectedFilmNames = selectedFilms.map(id => data.movies.filter(movie => movie.id === id)[0].title);
     $: inputPlaceholder = determineInputPlaceholder(filmTagName, selectedFilms);
-    $: filteredMovies = filterMovies(data.movies, filteredTags, currentTags, showUntagged);
+    $: filteredMovies = filterMovies(data.movies, filteredTags, currentTags, excludeTags, showUntagged);
     $: filteredTags = data.tags.sort((a, b) => {
         if(a.name.toLowerCase() < b.name.toLowerCase()) {
             return -1;
@@ -76,14 +78,17 @@
         
     }
 
-    function movieContainsTags(movieId, tags) {
+    function movieContainsTags(movieId, tags, negativeTags) {
         const movieTags = getTagsForId(filteredTags, movieId).map((tag) => tag.name.toLowerCase());
         for(let i = 0; i < tags.length; i++) {
-            if(!movieTags.includes(tags[i])) {
+            const tag = tags[i];
+            if(negativeTags.includes(tag) && movieTags.includes(tag)) {
+                return false;
+            }
+            if(!movieTags.includes(tag) && !negativeTags.includes(tag)) {
                 return false;
             }
         }
-        
         return true;
     }
 
@@ -98,13 +103,14 @@
 
     function removeTagFromFilter(tag) {
         currentTags = currentTags.filter(t => t !== tag);
+        excludeTags = excludeTags.filter(t => t !== tag);
     }
 
     function resetTagFilter() {
         currentTags = [];
     }
 
-    function filterMovies(movies, allTags, tagFilters, showUntagged) {
+    function filterMovies(movies, allTags, tagFilters, negativeFilters, showUntagged) {
         let filtered = movies.filter((movie) => {
             if(showUntagged) {
                 const movieTags = getTagsForId(allTags, movie.id);
@@ -113,7 +119,7 @@
             if(tagFilters.length === 0) {
                 return true;
             }
-            return movieContainsTags(movie.id, tagFilters);
+            return movieContainsTags(movie.id, tagFilters, negativeFilters);
         });
 
         filtered.sort((a, b) => {
@@ -153,6 +159,15 @@
             selectedFilms = [];
         }
     }
+
+    function toggleNegativeTag(tag) {
+        if(excludeTags.includes(tag)) {
+            excludeTags = excludeTags.filter(t => t !== tag);
+        }
+        else {
+            excludeTags = [...excludeTags, tag];
+        }
+    }
 </script>
 
 <Switch class="ml-4 mt-2 float-left" on:change={toggleEditTags} label="Edit tags" />
@@ -167,18 +182,22 @@
     </div>
 {/if}
 
-{#if currentTags.length > 0}
-    <div class="w-11/12 mx-auto pl-7 mb-4 flex">
-        {#each currentTags as tag, index}
-            <Badge class='mr-2' size='lg' radius='lg' variant='filled' >
-                {tag}
-                <svelte:fragment slot='leftSection'>
-                    <CloseButton on:click={() => removeTagFromFilter(currentTags[index])} size='xs' iconsize='xs' color='white' variant='transparent' />
-                </svelte:fragment>
-            </Badge>
-        {/each}
-    </div>
-{/if}
+<div class="w-11/12 mx-auto pl-7 mb-4 flex">
+    {#each currentTags as tag, index}
+        <Badge class='mr-2' size='lg' radius='lg' variant='filled' color={excludeTags.includes(currentTags[index]) ? 'red' : 'blue'} >
+            {tag}
+            <svelte:fragment slot='leftSection'>
+                <CloseButton on:click={() => removeTagFromFilter(currentTags[index])} size='xs' iconsize='xs' color='white' variant='transparent' />
+            </svelte:fragment>
+            
+            <svelte:fragment slot='rightSection'>
+                <Button on:click={() => toggleNegativeTag(currentTags[index])} compact color={excludeTags.includes(currentTags[index]) ? 'red' : 'blue'}>
+                    <Update />
+                </Button>
+            </svelte:fragment>
+        </Badge>
+    {/each}
+</div>
 
 <div class='flex flex-wrap mx-auto w-11/12'>
 {#each filteredMovies as movie}
