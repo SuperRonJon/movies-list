@@ -114,7 +114,7 @@
                     width={150}
                     height={225}
                     radius={10}
-                    alt='Movie Poster'
+                    alt={title}
                     class="mr-0 pr-0 mb-4"
                 />
                 {#if canAddTags && !canAddFilm}
