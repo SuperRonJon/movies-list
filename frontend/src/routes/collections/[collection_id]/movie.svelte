@@ -1,7 +1,8 @@
 <script>
-    import { Badge, Image, Tooltip, Group, CloseButton, Checkbox } from '@svelteuidev/core'
+    import { Badge, Image, Tooltip, Group, CloseButton, Checkbox, Menu } from '@svelteuidev/core'
     import { createEventDispatcher } from 'svelte';
-    import { IMAGE_BASE, addMovie, removeTag } from '$lib/index.js'
+    import { IMAGE_BASE, addMovie, removeTag, removeMovie } from '$lib/index.js';
+    import { Bookmark, Trash } from 'radix-icons-svelte';
 
     const dispatch = createEventDispatcher();
 
@@ -27,6 +28,11 @@
     const cursorOverride = {
         cursor: 'pointer'
     };
+
+    const menuOverride = {
+        backgroundColor: 'white',
+        borderRadius: '10%'
+    }
 
     $: release_year = release_date.split("-")[0];
 
@@ -70,9 +76,14 @@
         });
     }
 
-    function handleDeleteClicked(tagId) {
+    function handleTagDeleteClicked(tagId) {
         removeTag(tagId);
         dispatch('tag-removed');
+    }
+
+    function handleMovieDeleteClicked() {
+        removeMovie(id);
+        dispatch('movie-removed');
     }
 
     function tagIsHighlighted(tagName) {
@@ -106,8 +117,14 @@
                     alt='Movie Poster'
                     class="mr-0 pr-0 mb-4"
                 />
-                {#if (canAddTags || posterHovered) && !canAddFilm}
-                    <button on:click={addTagClicked} class="overlay-button">...</button>
+                {#if canAddTags && !canAddFilm}
+                    <div class="overlay-menu">
+                        <Menu override={menuOverride}>
+                            <Menu.Label>{title}</Menu.Label>
+                            <Menu.Item on:click={addTagClicked} icon={Bookmark}>Add Tag</Menu.Item>
+                            <Menu.Item on:click={handleMovieDeleteClicked} color="red" icon={Trash}>Remove movie</Menu.Item>
+                        </Menu>
+                    </div>
                 {/if}
                 {#if canAddFilm }
                     <button on:click={addMovieClicked} class="overlay-button">+</button>
@@ -118,7 +135,7 @@
                     </div>
                 {/if}
             </div>
-            
+
         </Tooltip>
         <Group class="ml-0 pl-0 mb-2" spacing='xs' direction='column'>
             {#each tags as tag}
@@ -126,7 +143,7 @@
                     {tag.name}
                     <svelte:fragment slot='rightSection'>
                         {#if canEditTags}
-                            <CloseButton on:click={() => handleDeleteClicked(tag.id)} size='xs' iconSize='xs' color={tagIsHighlighted(tag.name) ? "white" : "blue"} variant='transparent' />
+                            <CloseButton on:click={() => handleTagDeleteClicked(tag.id)} size='xs' iconSize='xs' color={tagIsHighlighted(tag.name) ? "white" : "blue"} variant='transparent' />
                         {/if}
                     </svelte:fragment>
                 </Badge>
@@ -159,6 +176,15 @@
         top: 3%;
         left: 5%;
         z-index: 2;
+    }
+
+    .overlay-menu {
+        position: absolute;
+        top: 85%;
+        left: 75%;
+        z-index: 2;
+        padding-left: 5px;
+        padding-right: 5px;
     }
 
 </style>

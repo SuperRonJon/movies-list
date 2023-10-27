@@ -146,3 +146,19 @@ export async function addCollection(collectionData) {
         throw Error("Error adding collection");
     }
 }
+
+export async function removeMovie(movieId) {
+    const res = await fetch(`${BASE_URL}/api/movies/${movieId}/`, {
+        method: "DELETE",
+        headers: {
+            "Content-Type": "application/json",
+        },
+    });
+
+    if(res.ok) {
+        return;
+    }
+    else {
+        throw Error("Error removing movie");
+    }
+}

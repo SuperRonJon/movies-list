@@ -170,7 +170,7 @@
     }
 </script>
 
-<Switch class="ml-4 mt-2 float-left" on:change={toggleEditTags} label="Edit tags" />
+<Switch class="ml-4 mt-2 float-left" on:change={toggleEditTags} label="Edit mode" />
 <Badge class="float-left ml-4 mt-2" on:click={() => showUntagged = !showUntagged} variant={showUntagged ? 'filled' : 'light'}>Untagged</Badge>
 <a class="text-blue-600 dark:text-blue-500 hover:underline mt-2 float-right mr-4" href={`/collections/${data.collectionId}/add`}>Add Page</a>
 <p class="float-right mt-2 mr-4">Number shown: {filteredMovies.length}</p>
@@ -212,6 +212,7 @@
             on:add-tags={handleAddTags} 
             on:tag-clicked={handleTagClicked} 
             on:tag-removed={() => invalidate(`${BASE_URL}/api/collections/${data.collectionId}/tags/`)}
+            on:movie-removed={() => invalidate(`${BASE_URL}/api/collections/${data.collectionId}/movies/`)}
             on:film-selected={filmSelected}
         />
     </div>
