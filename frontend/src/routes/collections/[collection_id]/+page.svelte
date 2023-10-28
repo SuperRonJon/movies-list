@@ -1,6 +1,7 @@
 <script>
   import Movie from "./movie.svelte";
-  import { addTag, addBulkTag, BASE_URL } from "$lib/index.js";
+  import { BASE_URL } from "$lib/index.js";
+  import { addTag, addBulkTag } from "$lib/api/tags.js";
   import {
     TextInput,
     Badge,

@@ -1,6 +1,7 @@
 <script>
   import { TextInput, Button } from "@svelteuidev/core";
-  import { addCollection, BASE_URL } from "$lib/index.js";
+  import { BASE_URL } from "$lib/index.js";
+  import { addCollection } from "$lib/api/collections.js";
   import { invalidate } from "$app/navigation";
 
   export let data;

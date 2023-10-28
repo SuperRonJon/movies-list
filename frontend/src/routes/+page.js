@@ -1,4 +1,4 @@
-import { getAllCollections } from "../lib";
+import { getAllCollections } from "$lib/api/collections";
 
 export async function load({ fetch }) {
   return {

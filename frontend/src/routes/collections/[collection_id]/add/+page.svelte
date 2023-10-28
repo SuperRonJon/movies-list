@@ -1,6 +1,6 @@
 <script>
   import { TextInput } from "@svelteuidev/core";
-  import { searchMovies } from "$lib/index.js";
+  import { searchMovies } from "$lib/api/movies.js";
   import Movie from "../movie.svelte";
 
   export let data;

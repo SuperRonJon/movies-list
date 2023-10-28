@@ -9,7 +9,9 @@
     Menu,
   } from "@svelteuidev/core";
   import { createEventDispatcher } from "svelte";
-  import { IMAGE_BASE, addMovie, removeTag, removeMovie } from "$lib/index.js";
+  import { IMAGE_BASE } from "$lib/index.js";
+  import { addMovie, removeMovie } from "$lib/api/movies.js";
+  import { removeTag } from "$lib/api/tags.js";
   import { Bookmark, Trash } from "radix-icons-svelte";
 
   const dispatch = createEventDispatcher();

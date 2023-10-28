@@ -2,7 +2,7 @@ import {
   getMoviesFromCollection,
   getTagsFromCollection,
   getAllCollections,
-} from "$lib/index.js";
+} from "$lib/api/collections.js";
 
 async function getCollectionName(id, fetchMethod = fetch) {
   const collections = await getAllCollections(fetchMethod);
