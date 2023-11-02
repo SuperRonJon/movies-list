@@ -13,28 +13,31 @@
   import { Update } from "radix-icons-svelte";
 
   export let data;
-  let filteredMovies = [];
-  let filteredTags = [];
-  let excludeTags = [];
-  let currentTags = [];
-  let selectedFilms = [];
-  let showInput = false;
-  let showUntagged = false;
-  let canEditTags = false;
-  let inputValue = "";
-  let filmTagId = "";
-  let filmTagName = "";
+  let filteredMovies = []; // Films that pass the currently selected filters
+  let filteredTags = []; // All tags returned for this collection
+  let excludeTags = []; // Currently selected tags that are inversed--being filtered OUT
+  let currentTags = []; // All currently selected tags
+  let selectedFilms = []; // IDs of all films currently selected by their checkboxes
+  let selectedFilmNames = []; // Titles of all films currently selected by their checkboxes
+  let showInput = false; // Whether or not the input box to add a new tag is shown
+  let showUntagged = false; // Flag to have filterMovies() only show movies with no tags
+  let canEditTags = false; // Whether or not edit mode is active. Use toggleEditTags() to change
+  let inputValue = ""; // String currently typed into the input box
+  let filmTagId = ""; // ID of the film most recently selected for adding tags to (not via edit mode)
+  let filmTagName = ""; // Title of the film most recently selected for adding tags to (not via edit mode)
 
   $: selectedFilmNames = selectedFilms.map(
     (id) => data.movies.filter((movie) => movie.id === id)[0].title
   );
+  $: filmTagName = getFilmTagName(filmTagId, data.movies);
   $: inputPlaceholder = determineInputPlaceholder(filmTagName, selectedFilms);
   $: filteredMovies = filterMovies(
     data.movies,
     filteredTags,
     currentTags,
     excludeTags,
-    showUntagged
+    showUntagged,
+    selectedFilms
   );
   $: filteredTags = data.tags.sort((a, b) => {
     if (a.name.toLowerCase() < b.name.toLowerCase()) {
@@ -50,6 +53,14 @@
     }
 
     return filmName === "" ? "Enter tag..." : `Enter tag for ${filmName}`;
+  }
+
+  function getFilmTagName(filmTagId, movies) {
+    if (filmTagId === "") {
+      return "";
+    }
+    const film = movies.filter((movie) => movie.id === filmTagId)[0];
+    return film.title;
   }
 
   function getTagsForId(allTags, id) {
@@ -84,11 +95,9 @@
     if (showInput && event.detail.id === filmTagId) {
       showInput = false;
       filmTagId = "";
-      filmTagName = "";
       return;
     }
     filmTagId = event.detail.id;
-    filmTagName = event.detail.title;
     if (!showInput) {
       showInput = true;
     }
@@ -124,25 +133,32 @@
     excludeTags = excludeTags.filter((t) => t !== tag);
   }
 
-  function resetTagFilter() {
-    currentTags = [];
-  }
-
   function filterMovies(
     movies,
     allTags,
     tagFilters,
     negativeFilters,
-    showUntagged
+    showUntagged,
+    currentlySelectedIds
   ) {
     let filtered = movies.filter((movie) => {
+      // if movie is currently selected is is always returned regardless
+      if (
+        currentlySelectedIds.includes(movie.id) ||
+        (filmTagId !== "" && filmTagId === movie.id)
+      ) {
+        return true;
+      }
       if (showUntagged) {
+        // Only return movies with no tags
         const movieTags = getTagsForId(allTags, movie.id);
         return movieTags.length === 0;
       }
       if (tagFilters.length === 0) {
+        // If no currently active filters, returns every movie
         return true;
       }
+      // Otherwise return a movie if it fits the currently active filters
       return movieContainsTags(movie.id, tagFilters, negativeFilters);
     });
 
@@ -190,6 +206,8 @@
   }
 </script>
 
+<!-- TOP BAR/MENU -->
+
 <Switch
   class="ml-4 mt-2 float-left"
   on:change={toggleEditTags}
@@ -216,6 +234,8 @@
     />
   </div>
 {/if}
+
+<!-- FILTER MANAGEMENT -->
 
 <div class="w-11/12 mx-auto pl-7 mb-4 flex">
   {#each currentTags as tag, index}
@@ -249,6 +269,8 @@
     </Badge>
   {/each}
 </div>
+
+<!-- MOVIES -->
 
 <div class="flex flex-wrap mx-auto w-11/12">
   {#each filteredMovies as movie}

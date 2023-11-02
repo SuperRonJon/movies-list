@@ -129,9 +129,10 @@
           alt={title}
           class="mr-0 pr-0 mb-4"
         />
+        <!-- ADD TAG MENU -->
         {#if canAddTags && !canAddFilm}
           <div class="overlay-menu">
-            <Menu override={menuOverride}>
+            <Menu size="sm" override={menuOverride}>
               <Menu.Label>{title}</Menu.Label>
               <Menu.Item on:click={addTagClicked} icon={Bookmark}
                 >Add Tag</Menu.Item
@@ -144,9 +145,11 @@
             </Menu>
           </div>
         {/if}
+        <!-- ADD TO COLLECTION BUTTON (ADD PAGE)-->
         {#if canAddFilm}
           <button on:click={addMovieClicked} class="overlay-button">+</button>
         {/if}
+        <!-- SELECTION CHECKBOX -->
         {#if canEditTags}
           <div class="overlay-checkbox">
             <Checkbox on:click={handleSelected} size="sm" radius="lg" />
@@ -154,6 +157,7 @@
         {/if}
       </div>
     </Tooltip>
+    <!-- TAG LIST -->
     <Group class="ml-0 pl-0 mb-2" spacing="xs" direction="column">
       {#each tags as tag}
         <Badge
