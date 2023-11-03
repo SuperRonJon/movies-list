@@ -10,9 +10,9 @@
   } from "@svelteuidev/core";
   import { createEventDispatcher } from "svelte";
   import { IMAGE_BASE } from "$lib/index.js";
-  import { addMovie, removeMovie } from "$lib/api/movies.js";
+  import { addMovie, removeMovie, updateMovie, getTmdbInfo } from "$lib/api/movies.js";
   import { removeTag } from "$lib/api/tags.js";
-  import { Bookmark, Trash } from "radix-icons-svelte";
+  import { Bookmark, Trash, Reload } from "radix-icons-svelte";
 
   const dispatch = createEventDispatcher();
 
@@ -110,6 +110,22 @@
   function handleMouseOver(toggleValue) {
     posterHovered = toggleValue;
   }
+
+  async function refreshClicked() {
+    const tmdbInfo = await getTmdbInfo(tmdb_id);
+    const filmData = {
+      id: id,
+      title: tmdbInfo.title,
+      release_date: tmdbInfo.release_date,
+      poster_path: tmdbInfo.poster_path,
+      tmdb_id: tmdbInfo.id,
+      popularity: tmdbInfo.popularity,
+      overview: tmdbInfo.overview,
+      collection: collectionId,
+    };
+    updateMovie(filmData);
+    dispatch("movie-removed");
+  }
 </script>
 
 <div>
@@ -137,6 +153,7 @@
               <Menu.Item on:click={addTagClicked} icon={Bookmark}
                 >Add Tag</Menu.Item
               >
+              <Menu.Item on:click={refreshClicked} icon={Reload}>Refresh Metadata</Menu.Item>
               <Menu.Item
                 on:click={handleMovieDeleteClicked}
                 color="red"

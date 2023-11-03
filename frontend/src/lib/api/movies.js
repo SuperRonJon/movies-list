@@ -6,15 +6,6 @@ export async function getAllMovies(fetchMethod = fetch) {
   return data;
 }
 
-export async function getAllTags(fetchMethod = fetch) {
-  const res = await fetchMethod(BASE_URL + "/api/tags/");
-  if (res.ok) {
-    return await res.json();
-  } else {
-    throw Error("Error getting tags");
-  }
-}
-
 export async function searchMovies(query) {
   const res = await fetch(BASE_URL + "/api/search/?q=" + query);
   if (res.ok) {
@@ -37,6 +28,31 @@ export async function addMovie(filmData) {
     return await res.json();
   } else {
     throw Error("Error adding film");
+  }
+}
+
+export async function updateMovie(filmData) {
+  const res = await fetch(`${BASE_URL}/api/movies/${filmData.id}/`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(filmData),
+  });
+
+  if (res.ok) {
+    return await res.json();
+  } else {
+    throw Error("Error updating film");
+  }
+}
+
+export async function getTmdbInfo(tmdbId) {
+  const res = await fetch(`${BASE_URL}/api/info/${tmdbId}/`);
+  if (res.ok) {
+    return await res.json();
+  } else {
+    throw Error("Error getting tmdb info");
   }
 }
 

@@ -29,7 +29,7 @@ class MoviesView(APIView):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class MovieView(generics.RetrieveDestroyAPIView):
+class MovieView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Movie.objects.all()
     serializer_class = MovieSerializer
 
