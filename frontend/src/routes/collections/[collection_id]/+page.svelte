@@ -206,6 +206,14 @@
   }
 </script>
 
+<svelte:head>
+  {#if data.collectionName}
+  <title>{data.collectionName}</title>
+  {:else}
+  <title>Movie Collection</title>
+  {/if}
+</svelte:head>
+
 <!-- TOP BAR/MENU -->
 
 <Switch
