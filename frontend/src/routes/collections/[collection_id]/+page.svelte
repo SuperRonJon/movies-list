@@ -26,6 +26,9 @@
   let filmTagId = ""; // ID of the film most recently selected for adding tags to (not via edit mode)
   let filmTagName = ""; // Title of the film most recently selected for adding tags to (not via edit mode)
 
+  const collectionTagsUrl = `${BASE_URL}/api/collections/${data.collectionId}/tags/`;
+  const collectionMoviesUrl = `${BASE_URL}/api/collections/${data.collectionId}/movies/`;
+
   $: selectedFilmNames = selectedFilms.map(
     (id) => data.movies.filter((movie) => movie.id === id)[0].title
   );
@@ -75,7 +78,7 @@
     ) {
       await addBulkTag(selectedFilms, inputValue, data.collectionId);
       inputValue = "";
-      invalidate(`${BASE_URL}/api/collections/${data.collectionId}/tags/`);
+      invalidate(collectionTagsUrl);
       return;
     }
     if (keyupEvent.key === "Enter" && inputValue !== "" && filmTagId !== "") {
@@ -86,7 +89,7 @@
       };
       await addTag(tagData);
       inputValue = "";
-      invalidate(`${BASE_URL}/api/collections/${data.collectionId}/tags/`);
+      invalidate(collectionTagsUrl);
       return;
     }
   }
@@ -208,9 +211,9 @@
 
 <svelte:head>
   {#if data.collectionName}
-  <title>{data.collectionName}</title>
+    <title>{data.collectionName}</title>
   {:else}
-  <title>Movie Collection</title>
+    <title>Movie Collection</title>
   {/if}
 </svelte:head>
 
@@ -292,12 +295,8 @@
         {canEditTags}
         on:add-tags={handleAddTags}
         on:tag-clicked={handleTagClicked}
-        on:tag-removed={() =>
-          invalidate(`${BASE_URL}/api/collections/${data.collectionId}/tags/`)}
-        on:movie-removed={() =>
-          invalidate(
-            `${BASE_URL}/api/collections/${data.collectionId}/movies/`
-          )}
+        on:tag-removed={() => invalidate(collectionTagsUrl)}
+        on:movie-removed={() => invalidate(collectionMoviesUrl)}
         on:film-selected={filmSelected}
       />
     </div>
