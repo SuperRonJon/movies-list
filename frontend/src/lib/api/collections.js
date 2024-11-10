@@ -8,8 +8,10 @@ export async function getMoviesFromCollection(
     `${BASE_URL}/api/collections/${collectionId}/movies/`
   );
   if (res.ok) {
+    console.log(`${BASE_URL}/api/collections/${collectionId}/movies/`);
     return await res.json();
   } else {
+    console.log(`${BASE_URL}/api/collections/${collectionId}/movies/`);
     throw Error("Error getting movies");
   }
 }
@@ -26,6 +28,7 @@ export async function getTagsFromCollection(collectionId, fetchMethod = fetch) {
 }
 
 export async function getAllCollections(fetchMethod = fetch) {
+  console.log(`${BASE_URL}/api/collections/`);
   const res = await fetchMethod(`${BASE_URL}/api/collections/`);
   return await res.json();
 }

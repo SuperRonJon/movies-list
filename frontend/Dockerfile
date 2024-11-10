@@ -4,7 +4,7 @@ RUN mkdir /frontend
 WORKDIR /frontend
 COPY package.json /frontend/
 
-ENV PUBLIC_BASE_URL=http://db:8000
+ENV PUBLIC_BASE_URL=""
 
 RUN npm install
 
