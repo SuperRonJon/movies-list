@@ -1,164 +1,238 @@
 <script>
-    import { Badge, Image, Tooltip, Group, CloseButton, Checkbox } from '@svelteuidev/core'
-    import { createEventDispatcher } from 'svelte';
-    import { IMAGE_BASE, addMovie, removeTag } from '$lib/index.js'
+  import {
+    Badge,
+    Image,
+    Tooltip,
+    Group,
+    CloseButton,
+    Checkbox,
+    Menu,
+  } from "@svelteuidev/core";
+  import { createEventDispatcher } from "svelte";
+  import { IMAGE_BASE } from "$lib/index.js";
+  import { addMovie, removeMovie, updateMovie, getTmdbInfo } from "$lib/api/movies.js";
+  import { removeTag } from "$lib/api/tags.js";
+  import { Bookmark, Trash, Reload } from "radix-icons-svelte";
 
-    const dispatch = createEventDispatcher();
+  const dispatch = createEventDispatcher();
 
-    export let title = "";
-    export let release_date = "";
-    export let poster_path = "";
-    export let tags = [];
+  export let title = "";
+  export let release_date = "";
+  export let poster_path = "";
+  export let tags = [];
 
-    export let tmdb_id = "";
-    export let id = "";
-    export let popularity = "";
-    export let overview = "";
-    export let collection = "";
+  export let tmdb_id = "";
+  export let id = "";
+  export let popularity = "";
+  export let overview = "";
+  export let collection = "";
 
-    export let canAddFilm = false;
-    export let canAddTags = false;
-    export let canEditTags = false;
-    export let highlightedTags = [];
-    export let collectionId = null;
+  export let canAddFilm = false;
+  export let canAddTags = false;
+  export let canEditTags = false;
+  export let highlightedTags = [];
+  export let collectionId = null;
 
-    let posterHovered = false;
+  let posterHovered = false;
 
-    const cursorOverride = {
-        cursor: 'pointer'
+  const cursorOverride = {
+    cursor: "pointer",
+  };
+
+  const menuOverride = {
+    backgroundColor: "white",
+    borderRadius: "10%",
+  };
+
+  $: release_year = release_date.split("-")[0];
+
+  tags.sort((a, b) => {
+    if (a.name < b.name) {
+      return -1;
+    } else {
+      return 1;
+    }
+  });
+
+  async function addMovieClicked() {
+    const filmData = {
+      title: title,
+      release_date: release_date,
+      poster_path: poster_path,
+      tmdb_id: tmdb_id,
+      popularity: popularity,
+      overview: overview,
+      collection: collectionId,
     };
+    await addMovie(filmData);
+  }
 
-    $: release_year = release_date.split("-")[0];
-
-    tags.sort((a, b) => {
-        if(a.name < b.name) {
-            return -1;
-        }
-        else {
-            return 1;
-        }
+  function addTagClicked() {
+    dispatch("add-tags", {
+      id: id,
+      tmdb_id: tmdb_id,
+      title: title,
     });
+  }
 
-    async function addMovieClicked() {
-        const filmData = {
-            title: title,
-            release_date: release_date,
-            poster_path: poster_path,
-            tmdb_id: tmdb_id,
-            popularity: popularity,
-            overview: overview,
-            collection: collectionId
-        }
-        await addMovie(filmData);
+  function tagBadgeClicked(event) {
+    if (event.target.nodeName === "svg") {
+      return;
     }
+    const tag = event.target.innerText.toLowerCase();
+    dispatch("tag-clicked", {
+      name: tag,
+    });
+  }
 
-    function addTagClicked() {
-        dispatch('add-tags', {
-            id: id,
-            tmdb_id: tmdb_id,
-            title: title,
-        });
-    }
+  function handleTagDeleteClicked(tagId) {
+    removeTag(tagId);
+    dispatch("tag-removed");
+  }
 
-    function tagBadgeClicked(event) {
-        if(event.target.nodeName === "svg") {
-            return;
-        }
-        const tag = event.target.innerText.toLowerCase();
-        dispatch('tag-clicked', {
-            name: tag,
-        });
-    }
+  function handleMovieDeleteClicked() {
+    removeMovie(id);
+    dispatch("movie-removed");
+  }
 
-    function handleDeleteClicked(tagId) {
-        removeTag(tagId);
-        dispatch('tag-removed');
-    }
+  function tagIsHighlighted(tagName) {
+    return highlightedTags.includes(tagName.toLowerCase());
+  }
 
-    function tagIsHighlighted(tagName) {
-        return highlightedTags.includes(tagName.toLowerCase());
-    }
+  function handleSelected() {
+    dispatch("film-selected", {
+      id: id,
+      tmdb_id: tmdb_id,
+      collection: collection,
+    });
+  }
 
-    function handleSelected() {
-        dispatch('film-selected', {
-            id: id,
-            tmdb_id: tmdb_id,
-            collection: collection,
-        });
-    }
+  function handleMouseOver(toggleValue) {
+    posterHovered = toggleValue;
+  }
 
-    function handleMouseOver(toggleValue) {
-        posterHovered = toggleValue;
-    }
+  async function refreshClicked() {
+    const tmdbInfo = await getTmdbInfo(tmdb_id);
+    const filmData = {
+      id: id,
+      title: tmdbInfo.title,
+      release_date: tmdbInfo.release_date,
+      poster_path: tmdbInfo.poster_path,
+      tmdb_id: tmdbInfo.id,
+      popularity: tmdbInfo.popularity,
+      overview: tmdbInfo.overview,
+      collection: collectionId,
+    };
+    updateMovie(filmData);
+    dispatch("movie-removed");
+  }
 </script>
+
 <div>
-    <Group position='center' spacing="xs">
-        <Tooltip label={`${title} (${release_year})`}>
-            <div role="tooltip" class="image-container mb-4 mr-2"
-                on:mouseenter={() => handleMouseOver(true)}
-                on:mouseleave={() => handleMouseOver(false)}
-            >
-                <Image
-                    src={IMAGE_BASE + poster_path}
-                    width={150}
-                    height={225}
-                    radius={10}
-                    alt='Movie Poster'
-                    class="mr-0 pr-0 mb-4"
-                />
-                {#if (canAddTags || posterHovered) && !canAddFilm}
-                    <button on:click={addTagClicked} class="overlay-button">...</button>
-                {/if}
-                {#if canAddFilm }
-                    <button on:click={addMovieClicked} class="overlay-button">+</button>
-                {/if}
-                {#if canEditTags}
-                    <div class="overlay-checkbox">
-                        <Checkbox on:click={handleSelected} size="sm" radius="lg" />
-                    </div>
-                {/if}
-            </div>
-            
-        </Tooltip>
-        <Group class="ml-0 pl-0 mb-2" spacing='xs' direction='column'>
-            {#each tags as tag}
-                <Badge on:click={tagBadgeClicked} size='sm' radius='sm' variant={tagIsHighlighted(tag.name) ? "filled" : "light"} override={cursorOverride}>
-                    {tag.name}
-                    <svelte:fragment slot='rightSection'>
-                        {#if canEditTags}
-                            <CloseButton on:click={() => handleDeleteClicked(tag.id)} size='xs' iconSize='xs' color={tagIsHighlighted(tag.name) ? "white" : "blue"} variant='transparent' />
-                        {/if}
-                    </svelte:fragment>
-                </Badge>
-            {/each}
-        </Group>
+  <Group position="center" spacing="xs">
+    <Tooltip label={`${title} (${release_year})`}>
+      <div
+        role="tooltip"
+        class="image-container mb-4 mr-2"
+        on:mouseenter={() => handleMouseOver(true)}
+        on:mouseleave={() => handleMouseOver(false)}
+      >
+        <Image
+          src={IMAGE_BASE + poster_path}
+          width={150}
+          height={225}
+          radius={10}
+          alt={title}
+          class="mr-0 pr-0 mb-4"
+        />
+        <!-- ADD TAG MENU -->
+        {#if canAddTags && !canAddFilm}
+          <div class="overlay-menu">
+            <Menu size="sm" override={menuOverride}>
+              <Menu.Label>{title}</Menu.Label>
+              <Menu.Item on:click={addTagClicked} icon={Bookmark}
+                >Add Tag</Menu.Item
+              >
+              <Menu.Item on:click={refreshClicked} icon={Reload}>Refresh Metadata</Menu.Item>
+              <Menu.Item
+                on:click={handleMovieDeleteClicked}
+                color="red"
+                icon={Trash}>Remove movie</Menu.Item
+              >
+            </Menu>
+          </div>
+        {/if}
+        <!-- ADD TO COLLECTION BUTTON (ADD PAGE)-->
+        {#if canAddFilm}
+          <button on:click={addMovieClicked} class="overlay-button">+</button>
+        {/if}
+        <!-- SELECTION CHECKBOX -->
+        {#if canEditTags}
+          <div class="overlay-checkbox">
+            <Checkbox on:click={handleSelected} size="sm" radius="lg" />
+          </div>
+        {/if}
+      </div>
+    </Tooltip>
+    <!-- TAG LIST -->
+    <Group class="ml-0 pl-0 mb-2" spacing="xs" direction="column">
+      {#each tags as tag}
+        <Badge
+          on:click={tagBadgeClicked}
+          size="sm"
+          radius="sm"
+          variant={tagIsHighlighted(tag.name) ? "filled" : "light"}
+          override={cursorOverride}
+        >
+          {tag.name}
+          <svelte:fragment slot="rightSection">
+            {#if canEditTags}
+              <CloseButton
+                on:click={() => handleTagDeleteClicked(tag.id)}
+                size="xs"
+                iconSize="xs"
+                color={tagIsHighlighted(tag.name) ? "white" : "blue"}
+                variant="transparent"
+              />
+            {/if}
+          </svelte:fragment>
+        </Badge>
+      {/each}
     </Group>
-    
+  </Group>
 </div>
 
 <style>
-    .image-container {
-        position: relative;
-        width: 150px;
-        height: 225px;
-    }
+  .image-container {
+    position: relative;
+    width: 150px;
+    height: 225px;
+  }
 
-    .overlay-button {
-        position: absolute;
-        top: 85%;
-        left: 80%;
-        z-index: 2;
-        color: white;
-        background-color: rgba(100, 100, 100, 0.603);
-        padding-left: 5px;
-        padding-right: 5px;
-    }
+  .overlay-button {
+    position: absolute;
+    top: 85%;
+    left: 80%;
+    z-index: 2;
+    color: white;
+    background-color: rgba(100, 100, 100, 0.603);
+    padding-left: 5px;
+    padding-right: 5px;
+  }
 
-    .overlay-checkbox {
-        position: absolute;
-        top: 3%;
-        left: 5%;
-        z-index: 2;
-    }
+  .overlay-checkbox {
+    position: absolute;
+    top: 3%;
+    left: 5%;
+    z-index: 2;
+  }
 
+  .overlay-menu {
+    position: absolute;
+    top: 85%;
+    left: 75%;
+    z-index: 2;
+    padding-left: 5px;
+    padding-right: 5px;
+  }
 </style>
