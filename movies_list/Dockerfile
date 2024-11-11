@@ -6,7 +6,7 @@ COPY requirements.txt /app/
 RUN pip install -r requirements.txt
 COPY . /app/
 
-ENV TMDB_API_KEY="08480996a40cd33ed4b23dfd4d24e278"
+ENV TMDB_API_KEY=""
 
 RUN python manage.py migrate
 
