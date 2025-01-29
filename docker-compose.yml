@@ -5,15 +5,11 @@ services:
     ports:
       - "8000:8000"
     volumes:
-      - db-data:/movieslist
+      - db-data:/app
   web:
     build: ./frontend
     ports:
       - "3000:3000"
-  proxy:
-    build: ./proxy
-    ports:
-      - "80:80"
 
 
 volumes:
