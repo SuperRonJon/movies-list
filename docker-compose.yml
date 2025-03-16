@@ -1,4 +1,3 @@
-version: '3'
 services:
   db:
     build: ./movies_list
@@ -6,6 +5,8 @@ services:
       - "8000:8000"
     volumes:
       - db-data:/app
+    environment:
+      - TMDB_API_KEY=api-key-here
   web:
     build: ./frontend
     ports:
