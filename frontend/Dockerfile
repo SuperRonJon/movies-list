@@ -10,6 +10,8 @@ COPY . /frontend/
 
 EXPOSE 3000
 
+ENV PUBLIC_BASE_URL=127.0.0.1:8000
+
 RUN npm run build
 
 CMD ["npm", "run", "preview", "--", "--port", "3000", "--host"]
