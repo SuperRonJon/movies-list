@@ -1,4 +1,4 @@
-FROM node:18
+FROM node:23-alpine
 
 RUN mkdir /frontend
 WORKDIR /frontend
@@ -10,7 +10,6 @@ COPY . /frontend/
 
 EXPOSE 3000
 
-ENV PUBLIC_BASE_URL=127.0.0.1:8000
 
 RUN npm run build
 
