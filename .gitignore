@@ -37,6 +37,6 @@ frontend/next-env.d.ts
 
 venv/
 .vscode/
-secrets.py
+secrets.py*
 *.sqlite3
 __pycache__/

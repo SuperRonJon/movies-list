@@ -10,7 +10,6 @@ COPY . /frontend/
 
 EXPOSE 3000
 
-
 RUN npm run build
 
 CMD ["npm", "run", "preview", "--", "--port", "3000", "--host"]

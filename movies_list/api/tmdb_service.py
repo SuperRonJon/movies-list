@@ -6,7 +6,10 @@ from requests.exceptions import HTTPError
 try:
     API_KEY = os.environ['TMDB_API_KEY']
 except KeyError:
-    from .secrets import API_KEY
+    try:
+        from .secrets import API_KEY
+    except ModuleNotFoundError:
+        API_KEY = None
 
 tmdb.API_KEY = API_KEY
 

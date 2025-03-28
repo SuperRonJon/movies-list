@@ -6,14 +6,11 @@ services:
     volumes:
       - db-data:/app
     environment:
-      - TMDB_API_KEY=api-key
+      - TMDB_API_KEY="api-key"
   web:
     build: ./frontend
     ports:
       - "3000:3000"
-    environment:
-      - PUBLIC_BASE_URL="http://127.0.0.1:8000"
-
 
 volumes:
   db-data:

@@ -4,6 +4,7 @@ export async function getMoviesFromCollection(
   collectionId,
   fetchMethod = fetch
 ) {
+  console.log("PUBLIC_BASE_URL", BASE_URL);
   const res = await fetchMethod(
     `${BASE_URL}/api/collections/${collectionId}/movies/`
   );
@@ -26,6 +27,7 @@ export async function getTagsFromCollection(collectionId, fetchMethod = fetch) {
 }
 
 export async function getAllCollections(fetchMethod = fetch) {
+  console.log("PUBLIC_BASE_URL", BASE_URL);
   const res = await fetchMethod(`${BASE_URL}/api/collections/`);
   return await res.json();
 }
