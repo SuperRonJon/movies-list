@@ -2,11 +2,14 @@ FROM node:23-alpine
 
 RUN mkdir /frontend
 WORKDIR /frontend
+ARG MODE
 COPY package.json /frontend/
 
 RUN npm install
 
 COPY . /frontend/
+
+COPY .env.${MODE} /frontend/.env
 
 EXPOSE 3000
 
